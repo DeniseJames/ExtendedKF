@@ -1,0 +1,14 @@
+# silly macOS
+.DS_Store
+
+# build files
+build/
+
+# editor config
+.vscode/
+
+#jet brains for github
+.idea/
+*.iml/
+
+
