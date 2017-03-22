@@ -9,6 +9,8 @@ build/
 
 #jet brains for github
 .idea/
-*.iml/
+*.iml metadata files/
+
+
 
 
