@@ -33,11 +33,8 @@ FusionEKF::FusionEKF() {
          0, 0.0225;
 
 
-    /**
-    TODO:
-      * Finish initializing the FusionEKF.
-    */
-
+    double noise_ax = 9;   // x uncertainty added
+    double noise_ay = 9;   // y uncertainty added
     ekf_.x_ = VectorXd(4);    // object state
     ekf_.P_ = MatrixXd(4,4);  // object covariance matrix
     // easier to update F matrix from its identity matrix form
@@ -61,7 +58,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     /*****************************************************************************
      *  Initialization
      ****************************************************************************/
-    if (measurement_pack.raw_measurements_[0] == 0 or measurement_pack.raw_measurements_[1] == 0) {
+
+    if (fabs(measurement_pack.raw_measurements_[0]) < 0.0001 or fabs(measurement_pack.raw_measurements_[1]) < 0.0001) {
         cout << "Error in measuring data, skipping it";
         return;
     }
@@ -79,8 +77,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
             /**
             Convert radar from polar to cartesian coordinates and initialize state.
             */
-            float x_cart = measurement_pack.raw_measurements_[0] * cos(measurement_pack.raw_measurements_[1]);
-            float y_cart = measurement_pack.raw_measurements_[0] * sin(measurement_pack.raw_measurements_[1]);
+            double x_cart = measurement_pack.raw_measurements_[0] * cos(measurement_pack.raw_measurements_[1]);
+            double y_cart = measurement_pack.raw_measurements_[0] * sin(measurement_pack.raw_measurements_[1]);
 
             if (x_cart == 0 or y_cart == 0){
                 cout << "Error in initializing state matrix";
@@ -95,8 +93,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
             /**
             Initialize state.
             */
-            float x = measurement_pack.raw_measurements_[0];
-            float y = measurement_pack.raw_measurements_[1];
+            double x = measurement_pack.raw_measurements_[0];
+            double y = measurement_pack.raw_measurements_[1];
             //Initialize the state ekf_.x_ with the first measurement
             ekf_.x_ << x, y, 0, 0;
         }
@@ -126,7 +124,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     //cout << measurement_pack.raw_measurements_ << endl;
     //cout << "previous_timestamp_ is:  "<< previous_timestamp_<<endl;
     // divide dt to get seconds units
-    float dt = (measurement_pack.timestamp_ - previous_timestamp_)/1000000.0;
+    double dt = (measurement_pack.timestamp_ - previous_timestamp_)/1000000.0;
     previous_timestamp_ = measurement_pack.timestamp_;
     //cout << "delta time is:  "<< dt<<endl;
     //cout << "measurement_pack.timestamp_ is:  "<< measurement_pack.timestamp_<<endl;
@@ -135,12 +133,12 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     ekf_.F_(1,3) = dt;
 
     // Update the process covariance matrix, Q to include time delta
-    float noise_ax = 9;   // x uncertainty added
-    float noise_ay = 9;   // y uncertainty added
 
-    float dt_2 = dt * dt;
-    float dt_3 = dt_2 * dt;
-    float dt_4 = dt_3 * dt;
+
+    double dt_2 = dt * dt;
+    double dt_3 = dt_2 * dt;
+    double
+            dt_4 = dt_3 * dt;
 
     //set the process covariance matrix Q
     ekf_.Q_ <<  dt_4/4*noise_ax, 0, dt_3/2*noise_ax, 0,
