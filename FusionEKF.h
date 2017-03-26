@@ -36,7 +36,7 @@ private:
   // check whether the tracking toolbox was initialized or not (first measurement)
   bool is_initialized_;
   // previous timestamp
-  long previous_timestamp_;
+  long long previous_timestamp_;
     //acceleration noise components
     float noise_ax = 3;
     float noise_ay = 3;

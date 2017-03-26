@@ -1,5 +1,5 @@
 #include "kalman_filter.h"
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 #include <iostream>
 #include "tools.h"
 using namespace Eigen;
@@ -57,7 +57,7 @@ void KalmanFilter::Update(const VectorXd &z) {
     //new estimate
     x_ = x_ + (K * y);
 
-    long x_size = x_.size();
+    long long x_size = x_.size();
     MatrixXd I = MatrixXd::Identity(x_size, x_size);
     P_ = (I - K * H_) * P_;
     //std::cout << "P_ new estimate is: " << P_ << std::endl;
@@ -75,7 +75,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
             */
 
     double rho = sqrt((x_[0]*x_[0] + x_[1]*x_[1]));
-    double phi = atan(x_[1]/x_[0]);
+    //double phi = atan(x_[1]/x_[0]);
+    double phi = atan2(x_[1],x_[0]);
     double rho_dot= (x_[0]*x_[2] + x_[1]*x_[3])/sqrt((x_[0]*x_[0] + x_[1]*x_[1]));
 
 
@@ -96,7 +97,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     x_ = x_ + (K * y);
     std::cout << "x_ laser new estimate is: " << std::endl;
     std::cout << x_<< std::endl;
-    long x_size = x_.size();
+    long long x_size = x_.size();
     MatrixXd I = MatrixXd::Identity(x_size, x_size);
     P_ = (I - K * H_) * P_;
 }
