@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
     for (size_t k = 0; k < N; ++k) {
         // start filtering from the second frame (the speed is unknown in the first
         // frame)
-        cout <<" k is now at   "<< k;
+        //cout <<" k is now at   "<< k <<endl;
         fusionEKF.ProcessMeasurement(measurement_pack_list[k]);
 
         // output the estimation
@@ -148,16 +148,16 @@ int main(int argc, char* argv[]) {
         // output the measurements
         if (measurement_pack_list[k].sensor_type_ == MeasurementPackage::LASER) {
             // output the estimation
-            cout << "  with a LASER sensor data"<<endl;
+            //cout << "  with a LASER sensor data"<<endl;
             out_file_ << measurement_pack_list[k].raw_measurements_(0) << "\t";
             out_file_ << measurement_pack_list[k].raw_measurements_(1) << "\t";
         } else if (measurement_pack_list[k].sensor_type_ == MeasurementPackage::RADAR) {
-            cout<<"  with a RADAR sensor data"<<endl;
+            //cout<<"  with a RADAR sensor data"<<endl;
             // output the estimation in the cartesian coordinates
             double ro = measurement_pack_list[k].raw_measurements_(0);
             double phi = measurement_pack_list[k].raw_measurements_(1);
-            out_file_ << ro * cos(phi) << "\t"; // p1_meas
-            out_file_ << ro * sin(phi) << "\t"; // ps_meas
+            out_file_ << ro * cos(phi) << "\t"; // px_meas
+            out_file_ << ro * sin(phi) << "\t"; // py_meas
         }
 
         // output the ground truth packages
@@ -166,8 +166,10 @@ int main(int argc, char* argv[]) {
         out_file_ << gt_pack_list[k].gt_values_(2) << "\t";
         out_file_ << gt_pack_list[k].gt_values_(3) << "\n";
 
-        estimations.push_back(fusionEKF.ekf_.x_);
-        ground_truth.push_back(gt_pack_list[k].gt_values_);
+        if (fabs(fusionEKF.ekf_.x_(0) > 0.001)) {
+            estimations.push_back(fusionEKF.ekf_.x_);
+            ground_truth.push_back(gt_pack_list[k].gt_values_);
+        }
     }
 
     // compute the accuracy (RMSE)

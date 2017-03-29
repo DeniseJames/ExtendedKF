@@ -29,6 +29,10 @@ FusionEKF::FusionEKF() {
     R_radar_ << 0.09, 0, 0,
           0, 0.0009, 0,
         0, 0, 0.09;
+
+
+
+
     R_laser_ << 0.0225, 0,
          0, 0.0225;
 
@@ -60,7 +64,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      ****************************************************************************/
 
     if (fabs(measurement_pack.raw_measurements_[0]) < 0.0001 or fabs(measurement_pack.raw_measurements_[1]) < 0.0001) {
-        cout << "Error in measuring data, skipping it";
+        cout << "No object detected, skipping the measurement" << endl;
         return;
     }
     if (!is_initialized_) {
@@ -80,7 +84,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
             double x_cart = measurement_pack.raw_measurements_[0] * cos(measurement_pack.raw_measurements_[1]);
             double y_cart = measurement_pack.raw_measurements_[0] * sin(measurement_pack.raw_measurements_[1]);
 
-            if (x_cart == 0 or y_cart == 0){
+            if (fabs(x_cart)<0.0001  || fabs(y_cart)<0.0001){
                 cout << "Error in initializing state matrix";
                 return;
             }
@@ -102,8 +106,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
         // identity matrix as the initial covariance matrix
         ekf_.P_ =  MatrixXd(4,4);
         ekf_.P_ << MatrixXd::Identity(4,4);
-        ekf_.P_(3,3)=1000;
-        ekf_.P_(2,2)=1000;
+        //ekf_.P_(3,3)=1000;
+        //ekf_.P_(2,2)=1000;
         //cout << "EKF initial state matrix is: "  << endl;
         //cout << ekf_.x_  << endl;
 
@@ -126,7 +130,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // divide dt to get seconds units
     double dt = (measurement_pack.timestamp_ - previous_timestamp_)/1000000.0;
     previous_timestamp_ = measurement_pack.timestamp_;
-    //cout << "delta time is:  "<< dt<<endl;
+
     //cout << "measurement_pack.timestamp_ is:  "<< measurement_pack.timestamp_<<endl;
     // update F matrix to include the delta time, dt
     ekf_.F_(0,2) = dt;
@@ -137,8 +141,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     double dt_2 = dt * dt;
     double dt_3 = dt_2 * dt;
-    double
-            dt_4 = dt_3 * dt;
+    double dt_4 = dt_3 * dt;
 
     //set the process covariance matrix Q
     ekf_.Q_ <<  dt_4/4*noise_ax, 0, dt_3/2*noise_ax, 0,

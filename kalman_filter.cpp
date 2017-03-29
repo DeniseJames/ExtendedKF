@@ -74,10 +74,15 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
             Convert radar from polar to cartesian coordinates and initialize state.
             */
 
-    double rho = sqrt((x_[0]*x_[0] + x_[1]*x_[1]));
+    //double rho = sqrt((x_[0]*x_[0] + x_[1]*x_[1]));
     //double phi = atan(x_[1]/x_[0]);
-    double phi = atan2(x_[1],x_[0]);
-    double rho_dot= (x_[0]*x_[2] + x_[1]*x_[3])/sqrt((x_[0]*x_[0] + x_[1]*x_[1]));
+    //double phi = atan2(x_[1],x_[0]);
+    //double rho_dot= (x_[0]*x_[2] + x_[1]*x_[3])/sqrt((x_[0]*x_[0] + x_[1]*x_[1]));
+
+    double rho = sqrt((x_(0)*x_(0) + x_(1)*x_(1)));
+    //double phi = atan(x_[1]/x_[0]);
+    double phi = atan2(x_(1),x_(0));
+    double rho_dot= (x_(0)*x_(2) + x_(1)*x_[3])/sqrt((x_(0)*x_(0) + x_(1)*x_(1)));
 
 
     //out << " rho, phi, rho_dot  " << rho << phi << rho_dot<< ::endl;
@@ -95,9 +100,9 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 
     //new estimate
     x_ = x_ + (K * y);
-    std::cout << "x_ laser new estimate is: " << std::endl;
-    std::cout << x_<< std::endl;
-    long long x_size = x_.size();
+    //std::cout << "x_ laser new estimate is: " << std::endl;
+    //std::cout << x_<< std::endl;
+    size_t x_size = x_.size();
     MatrixXd I = MatrixXd::Identity(x_size, x_size);
     P_ = (I - K * H_) * P_;
 }

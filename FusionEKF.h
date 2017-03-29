@@ -38,8 +38,8 @@ private:
   // previous timestamp
   long long previous_timestamp_;
     //acceleration noise components
-    float noise_ax = 3;
-    float noise_ay = 3;
+    float noise_ax = 9;
+    float noise_ay = 9;
 
   // tool object used to compute Jacobian and RMSE
   Tools tools;
